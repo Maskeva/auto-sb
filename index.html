@@ -201,6 +201,22 @@
             font-size: 0.9em;
             color: #666;
         }
+        /* 移动端优化 */
+        @media (max-width: 480px) {
+            .buttons {
+                flex-direction: column;
+            }
+            
+            button {
+                flex: none;
+                width: 100%;
+            }
+            
+            .link-details p {
+                word-break: break-all;
+            }
+        }
+        
     </style>
 </head>
 <body>
@@ -1080,4 +1096,5 @@
 </body>
 
 </html>
+
 
