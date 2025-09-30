@@ -1,0 +1,2 @@
+# auto-sb
+Automatic Configuration
