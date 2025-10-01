@@ -406,7 +406,9 @@
                         // 添加传输层参数
                         transport_type: config.net || 'tcp',
                         host: config.host || '',
-                        path: config.path || ''
+                        path: config.path || '',
+                        // VMess uTLS 指纹
+                        fp: config.fp || ''
                     };
                 } catch (e) {
                     console.error('解析VMess链接失败:', e);
@@ -436,6 +438,7 @@
                         pbk: params.get('pbk') || '', // reality公钥
                         sid: params.get('sid') || '', // reality短ID
                         fp: params.get('fp') || '',   // 指纹
+                        alpn: params.get('alpn') || '', // alpn
                         // 添加传输层参数
                         transport_type: params.get('type') || 'tcp',
                         host: params.get('host') || '',
@@ -736,6 +739,15 @@
             
             // 生成Sing-box配置
             function generateSingBoxConfig(links) {
+                // 新增：传输协议类型映射表，将链接中的简写映射到 Sing-box 配置中的标准名称
+                const transportTypeMap = {
+                    'ws': 'websocket',
+                    'h2': 'http', // H2 (HTTP/2) 在 sing-box 中配置为 http transport
+                    'http': 'http',
+                    'grpc': 'grpc',
+                    'quic': 'quic'
+                };
+                
                 // 基础配置模板
                 const baseConfig = {
                     "log": {
@@ -874,28 +886,44 @@
                             outbound.alter_id = link.alter_id || 0;
                             outbound.security = link.security || 'auto';
                             
-                            // 修复：正确的transport配置
-                            if (link.transport_type && link.transport_type !== 'tcp') {
+                            // --- 修改部分开始：传输层配置优化 ---
+                            const vmessConfigTransportType = transportTypeMap[link.transport_type] || link.transport_type;
+
+                            if (vmessConfigTransportType && vmessConfigTransportType !== 'tcp') {
                                 outbound.transport = {
-                                    type: link.transport_type
+                                    type: vmessConfigTransportType
                                 };
                                 
                                 // 根据传输类型添加特定参数
-                                if (link.transport_type === 'ws' && (link.host || link.path)) {
-                                    outbound.transport.headers = {};
-                                    if (link.host) outbound.transport.headers.Host = link.host;
-                                    if (link.path) outbound.transport.path = link.path;
-                                } else if (link.transport_type === 'http' && link.path) {
-                                    outbound.transport.path = link.path;
-                                    if (link.host) outbound.transport.host = [link.host];
-                                } else if (link.transport_type === 'grpc' && link.serviceName) {
-                                    outbound.transport.service_name = link.serviceName;
+                                if (vmessConfigTransportType === 'websocket') {
+                                    // Sing-box WebSocket transport 的 Host 字段在 headers 对象中
+                                    if (link.host) {
+                                        outbound.transport.headers = { Host: link.host };
+                                    }
+                                    if (link.path) {
+                                        outbound.transport.path = link.path;
+                                    }
+                                } else if (vmessConfigTransportType === 'http') {
+                                    if (link.path) {
+                                        outbound.transport.path = link.path;
+                                    }
+                                    // Sing-box http transport 的 host 字段是字符串数组，遵循规范
+                                    if (link.host) {
+                                        outbound.transport.host = Array.isArray(link.host) ? link.host : [link.host];
+                                    }
+                                } else if (vmessConfigTransportType === 'grpc') {
+                                    if (link.serviceName) {
+                                        outbound.transport.service_name = link.serviceName;
+                                    }
                                 }
                             }
+                            // --- 修改部分结束 ---
                             
                             if (link.tls) {
                                 outbound.tls = { enabled: true };
                                 if (link.sni) outbound.tls.server_name = link.sni;
+                                // VMess 也可能使用 uTLS
+                                if (link.fp) outbound.tls.utls = { enabled: true, fingerprint: link.fp };
                             }
                             break;
                             
@@ -903,31 +931,46 @@
                             outbound.type = 'vless';
                             outbound.uuid = link.uuid;
                             outbound.flow = link.flow || '';
-                            //outbound.encryption = link.encryption || 'none';
-                            
-                            // 修复：正确的transport配置
-                            if (link.transport_type && link.transport_type !== 'tcp') {
+                            //outbound.encryption = link.encryption || 'none'; // Sing-box VLESS 默认或省略 encryption
+
+                            // --- 修改部分开始：传输层配置优化 ---
+                            const vlessConfigTransportType = transportTypeMap[link.transport_type] || link.transport_type;
+
+                            if (vlessConfigTransportType && vlessConfigTransportType !== 'tcp') {
                                 outbound.transport = {
-                                    type: link.transport_type
+                                    type: vlessConfigTransportType
                                 };
-                                
+
                                 // 根据传输类型添加特定参数
-                                if (link.transport_type === 'ws' && (link.host || link.path)) {
-                                    outbound.transport.headers = {};
-                                    if (link.host) outbound.transport.headers.Host = link.host;
-                                    if (link.path) outbound.transport.path = link.path;
-                                } else if (link.transport_type === 'http' && link.path) {
-                                    outbound.transport.path = link.path;
-                                    if (link.host) outbound.transport.host = [link.host];
-                                } else if (link.transport_type === 'grpc' && link.serviceName) {
-                                    outbound.transport.service_name = link.serviceName;
+                                if (vlessConfigTransportType === 'websocket') {
+                                    if (link.host) {
+                                        outbound.transport.headers = { Host: link.host };
+                                    }
+                                    if (link.path) {
+                                        outbound.transport.path = link.path;
+                                    }
+                                } else if (vlessConfigTransportType === 'http') {
+                                    if (link.path) {
+                                        outbound.transport.path = link.path;
+                                    }
+                                    if (link.host) {
+                                        outbound.transport.host = Array.isArray(link.host) ? link.host : [link.host];
+                                    }
+                                } else if (vlessConfigTransportType === 'grpc') {
+                                    if (link.serviceName) {
+                                        outbound.transport.service_name = link.serviceName;
+                                    }
                                 }
                             }
+                            // --- 修改部分结束 ---
                             
-                            if (link.security === 'tls') {
+                            // --- 修改部分开始：TLS/Reality/uTLS 结构优化 ---
+                            if (link.security === 'tls' || link.security === 'xtls') {
                                 outbound.tls = { enabled: true };
                                 if (link.sni) outbound.tls.server_name = link.sni;
-                                if (link.alpn) outbound.tls.alpn = [link.alpn];
+                                // 修正 alpn 应该为字符串数组，假定 link.alpn 是逗号分隔的字符串
+                                if (link.alpn) outbound.tls.alpn = link.alpn.split(',');
+                                // 修正 uTLS 结构
                                 if (link.fp) outbound.tls.utls = { enabled: true, fingerprint: link.fp };
                             } else if (link.security === 'reality') {
                                 outbound.tls = { 
@@ -938,37 +981,56 @@
                                         short_id: link.sid
                                     }
                                 };
+                                // Reality 模式下 server_name 和 uTLS 依然重要
                                 if (link.sni) outbound.tls.server_name = link.sni;
+                                if (link.alpn) outbound.tls.alpn = link.alpn.split(',');
+                                if (link.fp) outbound.tls.utls = { enabled: true, fingerprint: link.fp };
                             }
+                            // --- 修改部分结束 ---
                             break;
                             
                         case 'trojan':
                             outbound.type = 'trojan';
                             outbound.password = link.password;
                             
-                            // 修复：正确的transport配置
-                            if (link.transport_type && link.transport_type !== 'tcp') {
+                            // --- 修改部分开始：传输层配置优化 ---
+                            const trojanConfigTransportType = transportTypeMap[link.transport_type] || link.transport_type;
+
+                            if (trojanConfigTransportType && trojanConfigTransportType !== 'tcp') {
                                 outbound.transport = {
-                                    type: link.transport_type
+                                    type: trojanConfigTransportType
                                 };
-                                
+
                                 // 根据传输类型添加特定参数
-                                if (link.transport_type === 'ws' && (link.host || link.path)) {
-                                    outbound.transport.headers = {};
-                                    if (link.host) outbound.transport.headers.Host = link.host;
-                                    if (link.path) outbound.transport.path = link.path;
-                                } else if (link.transport_type === 'http' && link.path) {
-                                    outbound.transport.path = link.path;
-                                    if (link.host) outbound.transport.host = [link.host];
-                                } else if (link.transport_type === 'grpc' && link.serviceName) {
-                                    outbound.transport.service_name = link.serviceName;
+                                if (trojanConfigTransportType === 'websocket') {
+                                    if (link.host) {
+                                        outbound.transport.headers = { Host: link.host };
+                                    }
+                                    if (link.path) {
+                                        outbound.transport.path = link.path;
+                                    }
+                                } else if (trojanConfigTransportType === 'http') {
+                                    if (link.path) {
+                                        outbound.transport.path = link.path;
+                                    }
+                                    if (link.host) {
+                                        outbound.transport.host = Array.isArray(link.host) ? link.host : [link.host];
+                                    }
+                                } else if (trojanConfigTransportType === 'grpc') {
+                                    if (link.serviceName) {
+                                        outbound.transport.service_name = link.serviceName;
+                                    }
                                 }
                             }
-                            
+                            // --- 修改部分结束 ---
+
+                            // Trojan 必须使用 TLS，若存在相关参数则启用 TLS并添加参数
                             if (link.sni || link.alpn || link.fp) {
                                 outbound.tls = { enabled: true };
                                 if (link.sni) outbound.tls.server_name = link.sni;
-                                if (link.alpn) outbound.tls.alpn = [link.alpn];
+                                // 修正 alpn 应该为字符串数组，假定 link.alpn 是逗号分隔的字符串
+                                if (link.alpn) outbound.tls.alpn = link.alpn.split(',');
+                                // 修正 uTLS 结构
                                 if (link.fp) outbound.tls.utls = { enabled: true, fingerprint: link.fp };
                             }
                             break;
@@ -1096,5 +1158,3 @@
 </body>
 
 </html>
-
-
