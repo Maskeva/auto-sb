@@ -6,14 +6,14 @@
     <title>Sing-box 配置生成器</title>
     <style>
         :root {
-            --primary-color: #3498db;
-            --secondary-color: #2ecc71;
-            --background-color: #f5f7fa;
-            --card-color: #ffffff;
-            --text-color: #333333;
-            --border-color: #e1e4e8;
-            --error-color: #e74c3c;
-            --success-color: #2ecc71;
+            --primary-color: #4a6ee0;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --light-bg: #f8f9fa;
+            --dark-bg: #343a40;
+            --border-color: #dee2e6;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         
         * {
@@ -25,23 +25,20 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
-            color: var(--text-color);
-            background-color: var(--background-color);
+            color: #333;
+            background-color: #f5f7fa;
             padding: 20px;
+            min-height: 100vh;
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 0 auto;
         }
         
         header {
             text-align: center;
             margin-bottom: 30px;
-            padding: 20px;
-            background-color: var(--card-color);
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
         
         h1 {
@@ -50,1099 +47,272 @@
         }
         
         .description {
-            color: #666;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        
-        @media (max-width: 768px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
+            color: var(--secondary-color);
+            margin-bottom: 20px;
         }
         
         .card {
-            background-color: var(--card-color);
+            background: white;
             border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--card-shadow);
+            padding: 25px;
+            margin-bottom: 20px;
         }
         
-        .card h2 {
+        .card-title {
+            font-size: 1.2rem;
             margin-bottom: 15px;
             color: var(--primary-color);
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 10px;
         }
         
-        .input-section {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
         }
         
         textarea {
             width: 100%;
-            min-height: 150px;
             padding: 12px;
             border: 1px solid var(--border-color);
             border-radius: 4px;
-            font-family: monospace;
+            font-size: 1rem;
+            min-height: 120px;
             resize: vertical;
-        }
-
-        #output-config {
-        min-height: 230px;  /* 输出框更大一些 */
+            font-family: monospace;
         }
         
-        .buttons {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        
-        button {
+        .btn {
+            display: inline-block;
             padding: 10px 15px;
             background-color: var(--primary-color);
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            font-size: 1rem;
             transition: background-color 0.3s;
         }
         
-        button:hover {
-            background-color: #2980b9;
+        .btn:hover {
+            background-color: #3a5bd0;
         }
         
-        button.secondary {
-            background-color: #6c757d;
-        }
-        
-        button.secondary:hover {
-            background-color: #5a6268;
-        }
-        
-        button.success {
+        .btn-success {
             background-color: var(--success-color);
         }
         
-        button.success:hover {
-            background-color: #27ae60;
+        .btn-success:hover {
+            background-color: #218838;
         }
         
-        .output-section {
+        .btn-danger {
+            background-color: var(--danger-color);
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        
+        .btn-group {
             display: flex;
-            flex-direction: column;
-            gap: 15px;
+            gap: 10px;
+            margin-top: 15px;
         }
         
-        .parsed-links {
-            margin-top: 20px;
-        }
-        
-        .link-item {
-            padding: 10px;
-            background-color: #f8f9fa;
+        .protocol-badge {
+            display: inline-block;
+            padding: 3px 8px;
             border-radius: 4px;
-            margin-bottom: 10px;
-            border-left: 4px solid var(--primary-color);
-        }
-        
-        .link-item h4 {
+            font-size: 0.8rem;
+            margin-right: 5px;
             margin-bottom: 5px;
-            color: var(--primary-color);
+            color: white;
         }
         
-        .link-details {
-            font-size: 0.9em;
-            color: #666;
+        .vmess-badge {
+            background-color: #007bff;
         }
         
-        .json-output {
-            position: relative;
+        .vless-badge {
+            background-color: #28a745;
         }
         
-        .message {
-            padding: 10px;
+        .trojan-badge {
+            background-color: #dc3545;
+        }
+        
+        .ss-badge {
+            background-color: #6f42c1;
+        }
+        
+        .hysteria-badge {
+            background-color: #fd7e14;
+        }
+        
+        .alert {
+            padding: 10px 15px;
             border-radius: 4px;
-            margin-top: 10px;
-            display: none;
+            margin-bottom: 15px;
         }
         
-        .message.error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
         }
         
-        .message.success {
+        .alert-success {
             background-color: #d4edda;
             color: #155724;
             border: 1px solid #c3e6cb;
         }
         
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .config-preview {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            margin-top: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        pre {
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
         footer {
             text-align: center;
             margin-top: 30px;
-            padding: 20px;
-            color: #666;
-            font-size: 0.9em;
+            color: var(--secondary-color);
+            font-size: 0.9rem;
         }
         
-        .supported-protocols {
+        .stats {
             margin-top: 10px;
-            font-size: 0.9em;
-            color: #666;
+            font-size: 0.9rem;
+            color: var(--secondary-color);
         }
-        /* 移动端优化 */
-        @media (max-width: 480px) {
-            .buttons {
-                flex-direction: column;
-            }
-            
-            button {
-                flex: none;
-                width: 100%;
-            }
-            
-            .link-details p {
-                word-break: break-all;
-            }
-        }
-        
     </style>
 </head>
 <body>
     <div class="container">
         <header>
             <h1>Sing-box 配置生成器</h1>
-            <p class="description">
-                本工具可以帮助您将Base64编码的订阅链接或直接输入的协议链接转换为Sing-box配置文件。
-                支持所有Sing-box协议类型，自动解析服务器地址和备注信息。
-            </p>
-            <div class="supported-protocols">
-                支持的协议：VMess、VLESS、Trojan、Shadowsocks、HTTP、SOCKS5、WireGuard、Hysteria、Hysteria2等
-            </div>
+            <p class="description">从Base64订阅链接或协议链接生成sing-box配置文件</p>
         </header>
         
-        <div class="main-content">
-            <div class="card">
-                <h2>输入配置</h2>
-                <div class="input-section">
-                    <div>
-                        <label for="input-links">输入Base64编码或协议链接（每行一条）:</label>
-                        <textarea id="input-links" placeholder="请输入Base64编码的订阅内容或协议链接，每行一条..."></textarea>
-                    </div>
-                    
-                    <div class="buttons">
-                        <button id="parse-btn" class="success">解析链接</button>
-                        <button id="clear-btn" class="secondary">清空输入</button>
-                    </div>
-                    
-                    <div id="message" class="message"></div>
-                    
-                    <div class="parsed-links">
-                        <h3>解析结果</h3>
-                        <div id="parsed-links-container"></div>
-                    </div>
-                </div>
+        <div class="card">
+            <div class="card-title">输入配置信息</div>
+            
+            <div class="alert alert-info">
+                支持以下格式：
+                <ul style="margin-top: 5px; margin-left: 20px;">
+                    <li>Base64编码的订阅链接</li>
+                    <li>单行或多行协议链接 (vmess://, vless://, trojan://, ss://)</li>
+                </ul>
             </div>
             
-            <div class="card">
-                <h2>输出配置</h2>
-                <div class="output-section">
-                    <div class="buttons">
-                        <button id="generate-btn">生成配置文件</button>
-                        <button id="copy-btn" class="secondary">复制配置</button>
-                        <button id="download-btn" class="secondary">下载配置</button>
-                    </div>
-                    
-                    <div class="json-output">
-                        <label for="output-config">Sing-box 配置文件:</label>
-                        <textarea id="output-config" readonly></textarea>
-                    </div>
-                </div>
+            <div class="form-group">
+                <label for="import-text">输入Base64订阅或协议链接</label>
+                <textarea id="import-text" placeholder="请输入Base64编码的订阅内容，或协议链接（每行一个）"></textarea>
+            </div>
+            
+            <div class="btn-group">
+                <button class="btn" id="generate-btn">生成配置</button>
+                <button class="btn btn-danger" id="clear-btn">清空</button>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-title">生成的配置</div>
+            
+            <div id="protocol-badges"></div>
+            <div class="stats" id="stats-info"></div>
+            
+            <div class="alert alert-success hidden" id="success-alert">
+                配置生成成功！
+            </div>
+            
+            <div class="alert alert-danger hidden" id="error-alert">
+                配置生成失败，请检查输入信息。
+            </div>
+            
+            <div class="config-preview">
+                <pre id="config-output">生成的配置将显示在这里</pre>
+            </div>
+            
+            <div class="btn-group">
+                <button class="btn btn-success" id="copy-btn">复制配置</button>
+                <button class="btn" id="download-btn">下载配置</button>
             </div>
         </div>
         
         <footer>
-            <p>Sing-box 配置生成器 &copy; 2023 | 本工具仅用于学习和研究目的</p>
+            <p>Sing-box 配置生成器 &copy; 2023</p>
         </footer>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // 获取DOM元素
-            const inputLinks = document.getElementById('input-links');
-            const outputConfig = document.getElementById('output-config');
-            const parseBtn = document.getElementById('parse-btn');
-            const clearBtn = document.getElementById('clear-btn');
-            const generateBtn = document.getElementById('generate-btn');
-            const downloadBtn = document.getElementById('download-btn');
-            const copyBtn = document.getElementById('copy-btn');
-            const messageDiv = document.getElementById('message');
-            const parsedLinksContainer = document.getElementById('parsed-links-container');
+            // 生成配置按钮
+            document.getElementById('generate-btn').addEventListener('click', generateConfig);
             
-            // 存储解析后的链接
-            let parsedLinks = [];
-            
-            // 显示消息
-            function showMessage(text, type) {
-                messageDiv.textContent = text;
-                messageDiv.className = `message ${type}`;
-                messageDiv.style.display = 'block';
-                
-                setTimeout(() => {
-                    messageDiv.style.display = 'none';
-                }, 5000);
-            }
-            
-            // 清空输入
-            clearBtn.addEventListener('click', function() {
-                inputLinks.value = '';
-                parsedLinksContainer.innerHTML = '';
-                outputConfig.value = '';
-                parsedLinks = [];
-                showMessage('输入已清空', 'success');
+            // 清空按钮
+            document.getElementById('clear-btn').addEventListener('click', function() {
+                document.getElementById('import-text').value = '';
+                document.getElementById('config-output').textContent = '生成的配置将显示在这里';
+                document.getElementById('protocol-badges').innerHTML = '';
+                document.getElementById('stats-info').textContent = '';
+                hideAlerts();
             });
             
-            // 解析链接
-            parseBtn.addEventListener('click', function() {
-                const input = inputLinks.value.trim();
-                if (!input) {
-                    showMessage('请输入内容', 'error');
+            // 复制配置按钮
+            document.getElementById('copy-btn').addEventListener('click', function() {
+                const configOutput = document.getElementById('config-output');
+                if (configOutput.textContent === '生成的配置将显示在这里') {
+                    showError('请先生成配置');
                     return;
                 }
                 
-                try {
-                    let links = [];
-                    
-                    // 尝试Base64解码
-                    try {
-                        const decoded = atob(input);
-                        // 如果解码成功，按行分割
-                        links = decoded.split('\n').filter(line => line.trim());
-                    } catch (e) {
-                        // 如果不是Base64，直接按行分割
-                        links = input.split('\n').filter(line => line.trim());
-                    }
-                    
-                    // 解析每行链接
-                    parsedLinks = [];
-                    for (const link of links) {
-                        try {
-                            const parsed = parseProtocolLink(link);
-                            if (parsed) {
-                                parsedLinks.push(parsed);
-                            }
-                        } catch (e) {
-                            console.warn(`无法解析链接: ${link}`, e);
-                        }
-                    }
-                    
-                    // 显示解析结果
-                    displayParsedLinks(parsedLinks);
-                    showMessage(`成功解析 ${parsedLinks.length} 个链接`, 'success');
-                } catch (error) {
-                    showMessage('解析失败: ' + error.message, 'error');
-                    console.error(error);
-                }
+                navigator.clipboard.writeText(configOutput.textContent)
+                    .then(() => {
+                        alert('配置已复制到剪贴板！');
+                    })
+                    .catch(err => {
+                        console.error('复制失败: ', err);
+                        alert('复制失败，请手动复制配置内容。');
+                    });
             });
             
-            // 解析协议链接
-            function parseProtocolLink(link) {
-                const trimmedLink = link.trim();
-                
-                // 检查协议类型
-                if (trimmedLink.startsWith('vmess://')) {
-                    return parseVMessLink(trimmedLink);
-                } else if (trimmedLink.startsWith('vless://')) {
-                    return parseVLESSLink(trimmedLink);
-                } else if (trimmedLink.startsWith('trojan://')) {
-                    return parseTrojanLink(trimmedLink);
-                } else if (trimmedLink.startsWith('ss://')) {
-                    return parseShadowsocksLink(trimmedLink);
-                } else if (trimmedLink.startsWith('http://') || trimmedLink.startsWith('https://')) {
-                    return parseHttpLink(trimmedLink);
-                } else if (trimmedLink.startsWith('socks://') || trimmedLink.startsWith('socks5://')) {
-                    return parseSocksLink(trimmedLink);
-                } else if (trimmedLink.startsWith('hysteria://')) {
-                    return parseHysteriaLink(trimmedLink);
-                } else if (trimmedLink.startsWith('hysteria2://')) {
-                    return parseHysteria2Link(trimmedLink);
-                } else if (trimmedLink.startsWith('wg://') || trimmedLink.includes('?public_key=')) {
-                    return parseWireGuardLink(trimmedLink);
-                } else {
-                    // 尝试其他协议或返回null
-                    return null;
-                }
-            }
-            
-            // 解析VMess链接
-            function parseVMessLink(link) {
-                try {
-                    const base64Data = link.substring(8); // 去掉"vmess://"
-                    const decodedData = atob(base64Data);
-                    const config = JSON.parse(decodedData);
-                    
-                    return {
-                        type: 'vmess',
-                        tag: decodeURIComponent(config.ps || '') || `VMess-${config.add}-${config.port}`,
-                        server: config.add,
-                        server_port: parseInt(config.port),
-                        uuid: config.id,
-                        alter_id: parseInt(config.aid) || 0,
-                        security: config.scy || 'auto',
-                        network: config.net || 'tcp',
-                        tls: config.tls === 'tls',
-                        sni: config.sni || config.host || '',
-                        // 添加传输层参数
-                        transport_type: config.net || 'tcp',
-                        host: config.host || '',
-                        path: config.path || '',
-                        // VMess uTLS 指纹
-                        fp: config.fp || ''
-                    };
-                } catch (e) {
-                    console.error('解析VMess链接失败:', e);
-                    return null;
-                }
-            }
-            
-            // 解析VLESS链接
-            function parseVLESSLink(link) {
-                try {
-                    const url = new URL(link);
-                    const params = new URLSearchParams(url.search);
-                    
-                    return {
-                        type: 'vless',
-                        tag: decodeURIComponent(url.hash.substring(1)) || `VLESS-${url.hostname}-${url.port}`,
-                        server: url.hostname,
-                        server_port: parseInt(url.port),
-                        uuid: url.username,
-                        flow: params.get('flow') || '',
-                        encryption: params.get('encryption') || 'none',
-                        network: params.get('type') || 'tcp',
-                        tls: params.get('security') === 'tls' || params.get('security') === 'reality',
-                        sni: params.get('sni') || params.get('host') || '',
-                        // 添加VLESS特有的参数
-                        security: params.get('security') || 'none',
-                        pbk: params.get('pbk') || '', // reality公钥
-                        sid: params.get('sid') || '', // reality短ID
-                        fp: params.get('fp') || '',   // 指纹
-                        alpn: params.get('alpn') || '', // alpn
-                        // 添加传输层参数
-                        transport_type: params.get('type') || 'tcp',
-                        host: params.get('host') || '',
-                        path: params.get('path') || '',
-                        serviceName: params.get('serviceName') || ''
-                    };
-                } catch (e) {
-                    console.error('解析VLESS链接失败:', e);
-                    return null;
-                }
-            }
-            
-            // 解析Trojan链接
-            function parseTrojanLink(link) {
-                try {
-                    const url = new URL(link);
-                    const params = new URLSearchParams(url.search);
-                    
-                    return {
-                        type: 'trojan',
-                        tag: decodeURIComponent(url.hash.substring(1)) || `Trojan-${url.hostname}-${url.port}`,
-                        server: url.hostname,
-                        server_port: parseInt(url.port),
-                        password: url.password || url.username,
-                        sni: params.get('sni') || params.get('host') || '',
-                        // 添加Trojan特有的参数
-                        flow: params.get('flow') || '',
-                        alpn: params.get('alpn') || '',
-                        fp: params.get('fp') || '',
-                        // 添加传输层参数
-                        transport_type: params.get('type') || 'tcp',
-                        host: params.get('host') || '',
-                        path: params.get('path') || ''
-                    };
-                } catch (e) {
-                    console.error('解析Trojan链接失败:', e);
-                    return null;
-                }
-            }
-            
-            // 解析Shadowsocks链接
-            function parseShadowsocksLink(link) {
-                try {
-                    const url = new URL(link);
-                    let method, password;
-                    
-                    // 尝试解析用户信息部分
-                    try {
-                        const userInfo = atob(url.username);
-                        const parts = userInfo.split(':');
-                        if (parts.length >= 2) {
-                            method = parts[0];
-                            password = parts.slice(1).join(':');
-                        } else {
-                            method = 'chacha20-ietf-poly1305';
-                            password = url.password || '';
-                        }
-                    } catch (e) {
-                        // 如果解析失败，使用默认值
-                        method = 'chacha20-ietf-poly1305';
-                        password = url.password || '';
-                    }
-                    
-                    // 解析插件参数
-                    const plugin = url.searchParams.get('plugin') || '';
-                    let pluginOpts = {};
-                    if (plugin) {
-                        const pluginParts = plugin.split(';');
-                        pluginOpts.type = pluginParts[0];
-                        if (pluginParts.length > 1) {
-                            pluginParts.slice(1).forEach(part => {
-                                const [key, value] = part.split('=');
-                                if (key && value) pluginOpts[key] = value;
-                            });
-                        }
-                    }
-                    
-                    return {
-                        type: 'shadowsocks',
-                        tag: decodeURIComponent(url.hash.substring(1)) || `Shadowsocks-${url.hostname}-${url.port}`,
-                        server: url.hostname,
-                        server_port: parseInt(url.port),
-                        method: method,
-                        password: password,
-                        plugin: plugin ? pluginOpts : undefined
-                    };
-                } catch (e) {
-                    console.error('解析Shadowsocks链接失败:', e);
-                    return null;
-                }
-            }
-            
-            // 解析HTTP链接
-            function parseHttpLink(link) {
-                try {
-                    const url = new URL(link);
-                    
-                    return {
-                        type: 'http',
-                        tag: `HTTP-${url.hostname}-${url.port}`,
-                        server: url.hostname,
-                        server_port: parseInt(url.port) || (url.protocol === 'https:' ? 443 : 80),
-                        username: url.username || '',
-                        password: url.password || '',
-                        tls: {
-                            enabled: url.protocol === 'https:'
-                        }
-                    };
-                } catch (e) {
-                    console.error('解析HTTP链接失败:', e);
-                    return null;
-                }
-            }
-            
-            // 解析SOCKS链接
-            function parseSocksLink(link) {
-                try {
-                    const url = new URL(link);
-                    
-                    return {
-                        type: 'socks',
-                        tag: `SOCKS-${url.hostname}-${url.port}`,
-                        server: url.hostname,
-                        server_port: parseInt(url.port) || 1080,
-                        username: url.username || '',
-                        password: url.password || '',
-                        version: link.includes('socks5://') ? '5' : '4'
-                    };
-                } catch (e) {
-                    console.error('解析SOCKS链接失败:', e);
-                    return null;
-                }
-            }
-            
-            // 解析Hysteria链接
-            function parseHysteriaLink(link) {
-                try {
-                    const url = new URL(link);
-                    const params = new URLSearchParams(url.search);
-                    
-                    return {
-                        type: 'hysteria',
-                        tag: decodeURIComponent(url.hash.substring(1)) || `Hysteria-${url.hostname}-${url.port}`,
-                        server: url.hostname,
-                        server_port: parseInt(url.port),
-                        auth: url.password || '',
-                        obfs: params.get('obfs') || '',
-                        protocol: params.get('protocol') || 'udp',
-                        sni: params.get('sni') || '',
-                        insecure: params.get('insecure') === '1' || params.get('allowInsecure') === '1',
-                        alpn: params.get('alpn') || '',
-                        up: params.get('up') || '',
-                        down: params.get('down') || ''
-                    };
-                } catch (e) {
-                    console.error('解析Hysteria链接失败:', e);
-                    return null;
-                }
-            }
-            
-            // 解析Hysteria2链接
-            function parseHysteria2Link(link) {
-                try {
-                    const url = new URL(link);
-                    const params = new URLSearchParams(url.search);
-                    
-                    // Hysteria2的密码在URL的username部分
-                    const password = url.username || '';
-                    
-                    return {
-                        type: 'hysteria2',
-                        tag: decodeURIComponent(url.hash.substring(1)) || `Hysteria2-${url.hostname}-${url.port}`,
-                        server: url.hostname,
-                        server_port: parseInt(url.port),
-                        password: password,
-                        obfs: params.get('obfs') || '',
-                        obfs_password: params.get('obfs-password') || '',
-                        sni: params.get('sni') || '',
-                        insecure: params.get('insecure') === '1' || params.get('allowInsecure') === '1',
-                        pin: params.get('pin') || '',
-                        alpn: params.get('alpn') || ''
-                    };
-                } catch (e) {
-                    console.error('解析Hysteria2链接失败:', e);
-                    return null;
-                }
-            }
-            
-            // 解析WireGuard链接
-            function parseWireGuardLink(link) {
-                try {
-                    if (link.startsWith('wg://')) {
-                        // 处理wg://格式
-                        const url = new URL(link);
-                        const params = new URLSearchParams(url.search);
-                        
-                        return {
-                            type: 'wireguard',
-                            tag: decodeURIComponent(url.hash.substring(1)) || `WireGuard-${url.hostname}-${url.port}`,
-                            server: url.hostname,
-                            server_port: parseInt(url.port) || 51820,
-                            private_key: url.username || '',
-                            public_key: params.get('public_key') || '',
-                            pre_shared_key: params.get('preshared_key') || params.get('preshared-key') || '',
-                            reserved: params.get('reserved') ? params.get('reserved').split(',').map(Number) : []
-                        };
-                    } else {
-                        // 处理其他格式
-                        const params = new URLSearchParams(link);
-                        const endpoint = params.get('endpoint') || '';
-                        const [server, port] = endpoint.split(':');
-                        
-                        return {
-                            type: 'wireguard',
-                            tag: `WireGuard-${server || 'unknown'}`,
-                            server: server || '',
-                            server_port: parseInt(port) || 51820,
-                            private_key: params.get('private_key') || '',
-                            public_key: params.get('public_key') || '',
-                            pre_shared_key: params.get('preshared_key') || params.get('preshared-key') || '',
-                            reserved: params.get('reserved') ? params.get('reserved').split(',').map(Number) : [],
-                            mtu: params.get('mtu') ? parseInt(params.get('mtu')) : undefined
-                        };
-                    }
-                } catch (e) {
-                    console.error('解析WireGuard链接失败:', e);
-                    return null;
-                }
-            }
-            
-            // 显示解析后的链接
-            function displayParsedLinks(links) {
-                parsedLinksContainer.innerHTML = '';
-                
-                if (links.length === 0) {
-                    parsedLinksContainer.innerHTML = '<p>未解析到有效链接</p>';
+            // 下载配置按钮
+            document.getElementById('download-btn').addEventListener('click', function() {
+                const configOutput = document.getElementById('config-output');
+                if (configOutput.textContent === '生成的配置将显示在这里') {
+                    showError('请先生成配置');
                     return;
                 }
                 
-                links.forEach(link => {
-                    const linkItem = document.createElement('div');
-                    linkItem.className = 'link-item';
-                    
-                    const title = document.createElement('h4');
-                    title.textContent = `${link.type.toUpperCase()} - ${link.tag}`;
-                    
-                    const details = document.createElement('div');
-                    details.className = 'link-details';
-                    
-                    let detailsHTML = `<p><strong>服务器:</strong> ${link.server}:${link.server_port}</p>`;
-                    
-                    if (link.uuid) detailsHTML += `<p><strong>UUID:</strong> ${link.uuid}</p>`;
-                    if (link.password) detailsHTML += `<p><strong>密码:</strong> ${link.password}</p>`;
-                    if (link.auth) detailsHTML += `<p><strong>认证:</strong> ${link.auth}</p>`;
-                    if (link.method) detailsHTML += `<p><strong>加密方式:</strong> ${link.method}</p>`;
-                    if (link.private_key) detailsHTML += `<p><strong>私钥:</strong> ${link.private_key.substring(0, 10)}...</p>`;
-                    if (link.public_key) detailsHTML += `<p><strong>公钥:</strong> ${link.public_key.substring(0, 10)}...</p>`;
-                    if (link.pre_shared_key) detailsHTML += `<p><strong>预共享密钥:</strong> ${link.pre_shared_key.substring(0, 10)}...</p>`;
-                    if (link.sni) detailsHTML += `<p><strong>SNI:</strong> ${link.sni}</p>`;
-                    if (link.obfs) detailsHTML += `<p><strong>混淆:</strong> ${link.obfs}</p>`;
-                    if (link.obfs_password) detailsHTML += `<p><strong>混淆密码:</strong> ${link.obfs_password}</p>`;
-                    if (link.pin) detailsHTML += `<p><strong>TLS证书指纹:</strong> ${link.pin}</p>`;
-                    if (link.flow) detailsHTML += `<p><strong>流控:</strong> ${link.flow}</p>`;
-                    if (link.alpn) detailsHTML += `<p><strong>ALPN:</strong> ${link.alpn}</p>`;
-                    if (link.fp) detailsHTML += `<p><strong>指纹:</strong> ${link.fp}</p>`;
-                    if (link.pbk) detailsHTML += `<p><strong>公钥:</strong> ${link.pbk.substring(0, 10)}...</p>`;
-                    if (link.sid) detailsHTML += `<p><strong>短ID:</strong> ${link.sid}</p>`;
-                    if (link.transport_type && link.transport_type !== 'tcp') detailsHTML += `<p><strong>传输协议:</strong> ${link.transport_type}</p>`;
-                    if (link.host) detailsHTML += `<p><strong>Host:</strong> ${link.host}</p>`;
-                    if (link.path) detailsHTML += `<p><strong>Path:</strong> ${link.path}</p>`;
-                    if (link.serviceName) detailsHTML += `<p><strong>服务名:</strong> ${link.serviceName}</p>`;
-                    
-                    details.innerHTML = detailsHTML;
-                    
-                    linkItem.appendChild(title);
-                    linkItem.appendChild(details);
-                    parsedLinksContainer.appendChild(linkItem);
-                });
-            }
-            
-            // 生成配置文件
-            generateBtn.addEventListener('click', function() {
-                try {
-                    if (parsedLinks.length === 0) {
-                        showMessage('没有解析到链接，请先解析链接', 'error');
-                        return;
-                    }
-                    
-                    // 生成配置文件
-                    const config = generateSingBoxConfig(parsedLinks);
-                    outputConfig.value = JSON.stringify(config, null, 2);
-                    showMessage('配置文件生成成功', 'success');
-                } catch (error) {
-                    showMessage('生成配置失败: ' + error.message, 'error');
-                    console.error(error);
-                }
-            });
-            
-            // 生成Sing-box配置
-            function generateSingBoxConfig(links) {
-                // 新增：传输协议类型映射表，将链接中的简写映射到 Sing-box 配置中的标准名称
-                const transportTypeMap = {
-                    'ws': 'websocket',
-                    'h2': 'http', // H2 (HTTP/2) 在 sing-box 中配置为 http transport
-                    'http': 'http',
-                    'grpc': 'grpc',
-                    'quic': 'quic'
-                };
-                
-                // 基础配置模板
-                const baseConfig = {
-                    "log": {
-                        "disabled": false,
-                        "level": "error",
-                        "timestamp": true
-                    },
-                    "dns": {
-                        "rules": [
-                            {
-                                "clash_mode": "Proxy",
-                                "server": "remote"
-                            },
-                            {
-                                "clash_mode": "Direct",
-                                "server": "local"
-                            },
-                            {
-                                "rule_set": ["geosite-cn"],
-                                "server": "local"
-                            }
-                        ],
-                        "servers": [
-                            {
-                                "type": "https",
-                                "server": "1.1.1.1",
-                                "detour": "Available",
-                                "tag": "remote"
-                            },
-                            {
-                                "type": "https",
-                                "server": "223.5.5.5",
-                                "tag": "local"
-                            },
-                            {
-                                "type": "hosts",
-                                "path": [],
-                                "predefined": {},
-                                "tag": "block"
-                            },
-                            {
-                                "type": "local"
-                            }
-                        ],
-                        "strategy": "prefer_ipv4"
-                    },
-                    "experimental": {
-                        "cache_file": {
-                            "enabled": true
-                        }
-                    },
-                    "inbounds": [
-                        {
-                            "address": ["172.18.0.1/30", "fdfe:dcba:9876::1/126"],
-                            "route_address": ["0.0.0.0/1", "128.0.0.0/1", "::/1", "8000::/1"],
-                            "route_exclude_address": [
-                                "192.168.0.0/16",
-                                "10.0.0.0/8",
-                                "172.16.0.0/12",
-                                "fc00::/7"
-                            ],
-                            "auto_route": true,
-                            "strict_route": true,
-                            "type": "tun"
-                        },
-                        {
-                            "listen": "127.0.0.1",
-                            "listen_port": 2333,
-                            "tag": "mixed-in",
-                            "type": "mixed",
-                            "users": []
-                        }
-                    ],
-                    "outbounds": [
-                        {
-                            "type": "selector",
-                            "tag": "Available",
-                            "default": links.length > 0 ? links[0].tag : "direct",
-                            "outbounds": links.length > 0 ? links.map(link => link.tag) : ["direct"]
-                        }
-                    ],
-                    "route": {
-                        "auto_detect_interface": true,
-                        "default_domain_resolver": "local",
-                        "rules": [
-                            {
-                                "action": "sniff"
-                            },
-                            {
-                                "protocol": "dns",
-                                "action": "hijack-dns"
-                            },
-                            {
-                                "clash_mode": "Direct",
-                                "outbound": "direct"
-                            },
-                            {
-                                "clash_mode": "Proxy",
-                                "outbound": "Available"
-                            },
-                            {
-                                "rule_set": ["geosite-cn"],
-                                "outbound": "direct"
-                            },
-                            {
-                                "ip_is_private": true,
-                                "outbound": "direct"
-                            }
-                        ],
-                        "rule_set": [
-                            {
-                                "tag": "geosite-cn",
-                                "type": "remote",
-                                "format": "binary",
-                                "url": "https://fastly.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/geosite-cn.srs",
-                                "download_detour": "direct"
-                            }
-                        ]
-                    }
-                };
-                
-                // 添加解析的链接作为出站
-                links.forEach(link => {
-                    // 根据协议类型创建不同的出站配置
-                    const outbound = { tag: link.tag };
-                    
-                    // 通用属性
-                    if (link.server) outbound.server = link.server;
-                    if (link.server_port) outbound.server_port = link.server_port;
-                    
-                    // 协议特定属性
-                    switch (link.type) {
-                        case 'vmess':
-                            outbound.type = 'vmess';
-                            outbound.uuid = link.uuid;
-                            outbound.alter_id = link.alter_id || 0;
-                            outbound.security = link.security || 'auto';
-                            
-                            // --- 修改部分开始：传输层配置优化 ---
-                            const vmessConfigTransportType = transportTypeMap[link.transport_type] || link.transport_type;
-
-                            if (vmessConfigTransportType && vmessConfigTransportType !== 'tcp') {
-                                outbound.transport = {
-                                    type: vmessConfigTransportType
-                                };
-                                
-                                // 根据传输类型添加特定参数
-                                if (vmessConfigTransportType === 'websocket') {
-                                    // Sing-box WebSocket transport 的 Host 字段在 headers 对象中
-                                    if (link.host) {
-                                        outbound.transport.headers = { Host: link.host };
-                                    }
-                                    if (link.path) {
-                                        outbound.transport.path = link.path;
-                                    }
-                                } else if (vmessConfigTransportType === 'http') {
-                                    if (link.path) {
-                                        outbound.transport.path = link.path;
-                                    }
-                                    // Sing-box http transport 的 host 字段是字符串数组，遵循规范
-                                    if (link.host) {
-                                        outbound.transport.host = Array.isArray(link.host) ? link.host : [link.host];
-                                    }
-                                } else if (vmessConfigTransportType === 'grpc') {
-                                    if (link.serviceName) {
-                                        outbound.transport.service_name = link.serviceName;
-                                    }
-                                }
-                            }
-                            // --- 修改部分结束 ---
-                            
-                            if (link.tls) {
-                                outbound.tls = { enabled: true };
-                                if (link.sni) outbound.tls.server_name = link.sni;
-                                // VMess 也可能使用 uTLS
-                                if (link.fp) outbound.tls.utls = { enabled: true, fingerprint: link.fp };
-                            }
-                            break;
-                            
-                        case 'vless':
-                            outbound.type = 'vless';
-                            outbound.uuid = link.uuid;
-                            outbound.flow = link.flow || '';
-                            //outbound.encryption = link.encryption || 'none'; // Sing-box VLESS 默认或省略 encryption
-
-                            // --- 修改部分开始：传输层配置优化 ---
-                            const vlessConfigTransportType = transportTypeMap[link.transport_type] || link.transport_type;
-
-                            if (vlessConfigTransportType && vlessConfigTransportType !== 'tcp') {
-                                outbound.transport = {
-                                    type: vlessConfigTransportType
-                                };
-
-                                // 根据传输类型添加特定参数
-                                if (vlessConfigTransportType === 'websocket') {
-                                    if (link.host) {
-                                        outbound.transport.headers = { Host: link.host };
-                                    }
-                                    if (link.path) {
-                                        outbound.transport.path = link.path;
-                                    }
-                                } else if (vlessConfigTransportType === 'http') {
-                                    if (link.path) {
-                                        outbound.transport.path = link.path;
-                                    }
-                                    if (link.host) {
-                                        outbound.transport.host = Array.isArray(link.host) ? link.host : [link.host];
-                                    }
-                                } else if (vlessConfigTransportType === 'grpc') {
-                                    if (link.serviceName) {
-                                        outbound.transport.service_name = link.serviceName;
-                                    }
-                                }
-                            }
-                            // --- 修改部分结束 ---
-                            
-                            // --- 修改部分开始：TLS/Reality/uTLS 结构优化 ---
-                            if (link.security === 'tls' || link.security === 'xtls') {
-                                outbound.tls = { enabled: true };
-                                if (link.sni) outbound.tls.server_name = link.sni;
-                                // 修正 alpn 应该为字符串数组，假定 link.alpn 是逗号分隔的字符串
-                                if (link.alpn) outbound.tls.alpn = link.alpn.split(',');
-                                // 修正 uTLS 结构
-                                if (link.fp) outbound.tls.utls = { enabled: true, fingerprint: link.fp };
-                            } else if (link.security === 'reality') {
-                                outbound.tls = { 
-                                    enabled: true,
-                                    reality: {
-                                        enabled: true,
-                                        public_key: link.pbk,
-                                        short_id: link.sid
-                                    }
-                                };
-                                // Reality 模式下 server_name 和 uTLS 依然重要
-                                if (link.sni) outbound.tls.server_name = link.sni;
-                                if (link.alpn) outbound.tls.alpn = link.alpn.split(',');
-                                if (link.fp) outbound.tls.utls = { enabled: true, fingerprint: link.fp };
-                            }
-                            // --- 修改部分结束 ---
-                            break;
-                            
-                        case 'trojan':
-                            outbound.type = 'trojan';
-                            outbound.password = link.password;
-                            
-                            // --- 修改部分开始：传输层配置优化 ---
-                            const trojanConfigTransportType = transportTypeMap[link.transport_type] || link.transport_type;
-
-                            if (trojanConfigTransportType && trojanConfigTransportType !== 'tcp') {
-                                outbound.transport = {
-                                    type: trojanConfigTransportType
-                                };
-
-                                // 根据传输类型添加特定参数
-                                if (trojanConfigTransportType === 'websocket') {
-                                    if (link.host) {
-                                        outbound.transport.headers = { Host: link.host };
-                                    }
-                                    if (link.path) {
-                                        outbound.transport.path = link.path;
-                                    }
-                                } else if (trojanConfigTransportType === 'http') {
-                                    if (link.path) {
-                                        outbound.transport.path = link.path;
-                                    }
-                                    if (link.host) {
-                                        outbound.transport.host = Array.isArray(link.host) ? link.host : [link.host];
-                                    }
-                                } else if (trojanConfigTransportType === 'grpc') {
-                                    if (link.serviceName) {
-                                        outbound.transport.service_name = link.serviceName;
-                                    }
-                                }
-                            }
-                            // --- 修改部分结束 ---
-
-                            // Trojan 必须使用 TLS，若存在相关参数则启用 TLS并添加参数
-                            if (link.sni || link.alpn || link.fp) {
-                                outbound.tls = { enabled: true };
-                                if (link.sni) outbound.tls.server_name = link.sni;
-                                // 修正 alpn 应该为字符串数组，假定 link.alpn 是逗号分隔的字符串
-                                if (link.alpn) outbound.tls.alpn = link.alpn.split(',');
-                                // 修正 uTLS 结构
-                                if (link.fp) outbound.tls.utls = { enabled: true, fingerprint: link.fp };
-                            }
-                            break;
-                            
-                        case 'shadowsocks':
-                            outbound.type = 'shadowsocks';
-                            outbound.method = link.method;
-                            outbound.password = link.password;
-                            if (link.plugin) {
-                                outbound.plugin = link.plugin.type;
-                                outbound.plugin_opts = link.plugin;
-                                delete outbound.plugin_opts.type;
-                            }
-                            break;
-                            
-                        case 'http':
-                            outbound.type = 'http';
-                            if (link.username) outbound.username = link.username;
-                            if (link.password) outbound.password = link.password;
-                            if (link.tls && link.tls.enabled) {
-                                outbound.tls = { enabled: true };
-                            }
-                            break;
-                            
-                        case 'socks':
-                            outbound.type = 'socks';
-                            outbound.version = link.version || '5';
-                            if (link.username) outbound.username = link.username;
-                            if (link.password) outbound.password = link.password;
-                            break;
-                            
-                        case 'hysteria':
-                            outbound.type = 'hysteria';
-                            if (link.auth) outbound.auth = link.auth;
-                            if (link.obfs) outbound.obfs = link.obfs;
-                            // Hysteria 需要 TLS
-                            outbound.tls = { enabled: true };
-                            if (link.sni) outbound.tls.server_name = link.sni;
-                            if (link.insecure) outbound.tls.insecure = true;
-                            if (link.alpn) outbound.tls.alpn = [link.alpn];
-                            if (link.up) outbound.up = link.up;
-                            if (link.down) outbound.down = link.down;
-                            break;
-                            
-                        case 'hysteria2':
-                            outbound.type = 'hysteria2';
-                            // 确保密码被正确添加到配置中
-                            if (link.password) outbound.password = link.password;
-                            if (link.obfs) {
-                                outbound.obfs = {
-                                    type: link.obfs,
-                                    password: link.obfs_password || ''
-                                };
-                            }
-                            // Hysteria2 必须启用 TLS
-                            outbound.tls = { enabled: true };
-                            if (link.sni) outbound.tls.server_name = link.sni;
-                            if (link.insecure) outbound.tls.insecure = true;
-                            if (link.pin) outbound.tls.certificate_pin = link.pin;
-                            if (link.alpn) outbound.tls.alpn = [link.alpn];
-                            break;
-                            
-                        case 'wireguard':
-                            outbound.type = 'wireguard';
-                            outbound.private_key = link.private_key;
-                            outbound.peers = [{
-                                public_key: link.public_key,
-                                endpoint: `${link.server}:${link.server_port}`
-                            }];
-                            if (link.pre_shared_key) outbound.peers[0].pre_shared_key = link.pre_shared_key;
-                            if (link.reserved && link.reserved.length > 0) outbound.reserved = link.reserved;
-                            if (link.mtu) outbound.mtu = link.mtu;
-                            break;
-                            
-                        default:
-                            // 未知协议类型
-                            console.warn(`未知协议类型: ${link.type}`);
-                            return;
-                    }
-                    
-                    baseConfig.outbounds.push(outbound);
-                });
-                
-                // 添加直连出站
-                baseConfig.outbounds.push({
-                    "type": "direct",
-                    "tag": "direct"
-                });
-                
-                return baseConfig;
-            }
-            
-            // 复制配置
-            copyBtn.addEventListener('click', function() {
-                if (!outputConfig.value) {
-                    showMessage('没有可复制的内容', 'error');
-                    return;
-                }
-                
-                outputConfig.select();
-                document.execCommand('copy');
-                showMessage('配置已复制到剪贴板', 'success');
-            });
-            
-            // 下载配置
-            downloadBtn.addEventListener('click', function() {
-                if (!outputConfig.value) {
-                    showMessage('没有可下载的内容', 'error');
-                    return;
-                }
-                
-                const blob = new Blob([outputConfig.value], { type: 'application/json' });
+                const blob = new Blob([configOutput.textContent], { type: 'application/json' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
@@ -1151,10 +321,404 @@
                 a.click();
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
-                showMessage('配置文件已下载', 'success');
             });
+            
+            // 生成配置函数
+            function generateConfig() {
+                const importText = document.getElementById('import-text').value.trim();
+                if (!importText) {
+                    showError('请输入订阅内容或协议链接');
+                    return;
+                }
+                
+                try {
+                    let configs = [];
+                    
+                    // 判断输入类型
+                    if (isBase64(importText)) {
+                        // Base64订阅内容
+                        configs = parseBase64Subscription(importText);
+                    } else {
+                        // 协议链接（单行或多行）
+                        const lines = importText.split('\n').filter(line => line.trim());
+                        configs = parseProtocolLinks(lines);
+                    }
+                    
+                    if (configs.length === 0) {
+                        showError('未找到有效的配置信息');
+                        return;
+                    }
+                    
+                    // 生成完整的sing-box配置
+                    const fullConfig = {
+                        "log": {
+                            "level": "info",
+                            "timestamp": true
+                        },
+                        "dns": {
+                            "servers": [
+                                {
+                                    "tag": "google",
+                                    "address": "tls://8.8.8.8",
+                                    "detour": "direct"
+                                },
+                                {
+                                    "tag": "local",
+                                    "address": "223.5.5.5",
+                                    "detour": "direct"
+                                }
+                            ],
+                            "rules": [
+                                {
+                                    "outbound": "any",
+                                    "server": "local"
+                                }
+                            ],
+                            "final": "google"
+                        },
+                        "inbounds": [
+                            {
+                                "type": "tun",
+                                "interface_name": "tun0",
+                                "mtu": 9000,
+                                "stack": "mixed",
+                                "endpoint_independent_nat": true,
+                                "sniff": true
+                            }
+                        ],
+                        "outbounds": [
+                            {
+                                "type": "direct",
+                                "tag": "direct"
+                            },
+                            {
+                                "type": "block",
+                                "tag": "block"
+                            },
+                            {
+                                "type": "dns",
+                                "tag": "dns-out"
+                            }
+                        ],
+                        "route": {
+                            "rules": [
+                                {
+                                    "protocol": "dns",
+                                    "outbound": "dns-out"
+                                },
+                                {
+                                    "clash_mode": "direct",
+                                    "outbound": "direct"
+                                },
+                                {
+                                    "clash_mode": "global",
+                                    "outbound": "proxy"
+                                },
+                                {
+                                    "geoip": [
+                                        "cn",
+                                        "private"
+                                    ],
+                                    "outbound": "direct"
+                                }
+                            ],
+                            "auto_detect_interface": true
+                        }
+                    };
+                    
+                    // 添加解析出的配置
+                    configs.forEach((config, index) => {
+                        config.tag = config.tag || `proxy-${index + 1}`;
+                        fullConfig.outbounds.push(config);
+                    });
+                    
+                    // 设置默认代理出口
+                    if (configs.length > 0) {
+                        fullConfig.outbounds.push({
+                            "type": "selector",
+                            "tag": "proxy",
+                            "outbounds": configs.map((_, index) => `proxy-${index + 1}`)
+                        });
+                    }
+                    
+                    // 显示配置
+                    document.getElementById('config-output').textContent = JSON.stringify(fullConfig, null, 2);
+                    updateProtocolBadges(configs);
+                    updateStats(configs.length);
+                    showSuccess();
+                } catch (error) {
+                    console.error('生成配置时出错:', error);
+                    showError('生成配置失败，请检查输入格式是否正确');
+                }
+            }
+            
+            // 解析Base64订阅
+            function parseBase64Subscription(base64Str) {
+                try {
+                    const decoded = atob(base64Str);
+                    const lines = decoded.split('\n').filter(line => line.trim());
+                    return parseProtocolLinks(lines);
+                } catch (error) {
+                    throw new Error('Base64解码失败');
+                }
+            }
+            
+            // 解析协议链接
+            function parseProtocolLinks(links) {
+                const configs = [];
+                
+                links.forEach(link => {
+                    try {
+                        if (link.startsWith('vmess://')) {
+                            configs.push(parseVmessLink(link));
+                        } else if (link.startsWith('vless://')) {
+                            configs.push(parseVlessLink(link));
+                        } else if (link.startsWith('trojan://')) {
+                            configs.push(parseTrojanLink(link));
+                        } else if (link.startsWith('ss://')) {
+                            configs.push(parseShadowsocksLink(link));
+                        }
+                    } catch (error) {
+                        console.warn('解析链接失败:', link, error);
+                    }
+                });
+                
+                return configs;
+            }
+            
+            // 解析VMess链接
+            function parseVmessLink(link) {
+                const base64Str = link.substring(8);
+                const decoded = atob(base64Str);
+                const vmessConfig = JSON.parse(decoded);
+                
+                const config = {
+                    "type": "vmess",
+                    "tag": vmessConfig.ps || "vmess-outbound",
+                    "server": vmessConfig.add,
+                    "server_port": parseInt(vmessConfig.port),
+                    "uuid": vmessConfig.id,
+                    "security": vmessConfig.scy || "auto",
+                    "alter_id": parseInt(vmessConfig.aid) || 0
+                };
+                
+                // 传输设置
+                if (vmessConfig.net) {
+                    config.transport = {
+                        "type": vmessConfig.net
+                    };
+                    
+                    if (vmessConfig.net === 'ws') {
+                        config.transport.path = vmessConfig.path || "/";
+                        config.transport.headers = {
+                            "Host": vmessConfig.host || vmessConfig.add
+                        };
+                    }
+                }
+                
+                // TLS设置
+                if (vmessConfig.tls === 'tls') {
+                    config.tls = {
+                        "enabled": true,
+                        "server_name": vmessConfig.sni || vmessConfig.host || vmessConfig.add
+                    };
+                }
+                
+                return config;
+            }
+            
+            // 解析VLESS链接
+            function parseVlessLink(link) {
+                const url = new URL(link);
+                const config = {
+                    "type": "vless",
+                    "tag": url.hash ? decodeURIComponent(url.hash.substring(1)) : "vless-outbound",
+                    "server": url.hostname,
+                    "server_port": parseInt(url.port),
+                    "uuid": url.username
+                };
+                
+                // 查询参数
+                const params = new URLSearchParams(url.search);
+                
+                if (params.get('type')) {
+                    config.transport = {
+                        "type": params.get('type')
+                    };
+                    
+                    if (params.get('type') === 'ws') {
+                        config.transport.path = params.get('path') || "/";
+                        if (params.get('host')) {
+                            config.transport.headers = {
+                                "Host": params.get('host')
+                            };
+                        }
+                    }
+                }
+                
+                if (params.get('security') === 'tls') {
+                    config.tls = {
+                        "enabled": true,
+                        "server_name": params.get('sni') || url.hostname
+                    };
+                }
+                
+                if (params.get('flow')) {
+                    config.flow = params.get('flow');
+                }
+                
+                return config;
+            }
+            
+            // 解析Trojan链接
+            function parseTrojanLink(link) {
+                const url = new URL(link);
+                const config = {
+                    "type": "trojan",
+                    "tag": url.hash ? decodeURIComponent(url.hash.substring(1)) : "trojan-outbound",
+                    "server": url.hostname,
+                    "server_port": parseInt(url.port),
+                    "password": url.username
+                };
+                
+                // 查询参数
+                const params = new URLSearchParams(url.search);
+                
+                if (params.get('type')) {
+                    config.transport = {
+                        "type": params.get('type')
+                    };
+                    
+                    if (params.get('type') === 'ws') {
+                        config.transport.path = params.get('path') || "/";
+                        if (params.get('host')) {
+                            config.transport.headers = {
+                                "Host": params.get('host')
+                            };
+                        }
+                    }
+                }
+                
+                config.tls = {
+                    "enabled": true,
+                    "server_name": params.get('sni') || url.hostname
+                };
+                
+                return config;
+            }
+            
+            // 解析Shadowsocks链接
+            function parseShadowsocksLink(link) {
+                // 处理ss://base64#remark格式
+                if (link.includes('@')) {
+                    // ss://method:password@server:port#remark
+                    const match = link.match(/ss:\/\/([^:]+):([^@]+)@([^:]+):(\d+)(?:#(.+))?/);
+                    if (match) {
+                        return {
+                            "type": "shadowsocks",
+                            "tag": match[5] || "ss-outbound",
+                            "server": match[3],
+                            "server_port": parseInt(match[4]),
+                            "method": match[1],
+                            "password": match[2]
+                        };
+                    }
+                } else {
+                    // ss://base64#remark格式
+                    const base64Str = link.substring(5).split('#')[0];
+                    const decoded = atob(base64Str);
+                    const parts = decoded.split('@');
+                    const methodPassword = parts[0].split(':');
+                    const serverPort = parts[1].split(':');
+                    
+                    return {
+                        "type": "shadowsocks",
+                        "tag": link.split('#')[1] || "ss-outbound",
+                        "server": serverPort[0],
+                        "server_port": parseInt(serverPort[1]),
+                        "method": methodPassword[0],
+                        "password": methodPassword[1]
+                    };
+                }
+                
+                throw new Error('无法解析Shadowsocks链接');
+            }
+            
+            // 检查字符串是否为Base64
+            function isBase64(str) {
+                try {
+                    return btoa(atob(str)) === str;
+                } catch (err) {
+                    return false;
+                }
+            }
+            
+            // 更新协议徽章
+            function updateProtocolBadges(configs) {
+                const badgesContainer = document.getElementById('protocol-badges');
+                const protocolCount = {};
+                
+                configs.forEach(config => {
+                    const protocol = config.type;
+                    protocolCount[protocol] = (protocolCount[protocol] || 0) + 1;
+                });
+                
+                let badgesHTML = '';
+                for (const [protocol, count] of Object.entries(protocolCount)) {
+                    let badgeClass = '';
+                    let badgeText = '';
+                    
+                    switch(protocol) {
+                        case 'vmess':
+                            badgeClass = 'vmess-badge';
+                            badgeText = 'VMess';
+                            break;
+                        case 'vless':
+                            badgeClass = 'vless-badge';
+                            badgeText = 'VLESS';
+                            break;
+                        case 'trojan':
+                            badgeClass = 'trojan-badge';
+                            badgeText = 'Trojan';
+                            break;
+                        case 'shadowsocks':
+                            badgeClass = 'ss-badge';
+                            badgeText = 'Shadowsocks';
+                            break;
+                    }
+                    
+                    if (badgeClass) {
+                        badgesHTML += `<span class="protocol-badge ${badgeClass}">${badgeText} × ${count}</span>`;
+                    }
+                }
+                
+                badgesContainer.innerHTML = badgesHTML;
+            }
+            
+            // 更新统计信息
+            function updateStats(count) {
+                document.getElementById('stats-info').textContent = `共解析出 ${count} 个节点配置`;
+            }
+            
+            // 显示成功消息
+            function showSuccess() {
+                document.getElementById('success-alert').classList.remove('hidden');
+                document.getElementById('error-alert').classList.add('hidden');
+            }
+            
+            // 显示错误消息
+            function showError(message) {
+                document.getElementById('error-alert').classList.remove('hidden');
+                document.getElementById('error-alert').textContent = message;
+                document.getElementById('success-alert').classList.add('hidden');
+            }
+            
+            // 隐藏所有提示
+            function hideAlerts() {
+                document.getElementById('success-alert').classList.add('hidden');
+                document.getElementById('error-alert').classList.add('hidden');
+            }
         });
     </script>
 </body>
-
 </html>
